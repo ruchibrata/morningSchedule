@@ -1,0 +1,239 @@
+//Fixed Input or User Input 
+
+//buld the finalTime
+var today = new Date();
+var finalTimeString = "7:50";
+var finalTimeArr=finalTimeString.split(":");
+var finalTime = new Date(today.getFullYear(),today.getMonth(),today.getDate(),parseInt(finalTimeArr[0]),parseInt(finalTimeArr[1]),0,0);
+alert(finalTime);
+
+var worksToDo = [                   //array of works
+['Use the Bathroom', '10 minutes'],
+['Dress change', '5 minutes'],
+['Drink Honey Water', '2 minutes'],
+['Put shoe and jacket', '3 minutes']
+]
+var worksNo = worksToDo.length;
+var counter = 0; //variable for schedule
+var varSetIntervalId = "varSetIntervalId"+counter;    //variable for setInterval function
+var bonusTime =0;
+
+//var setIntervalId; 
+/************initial screen**********************/
+function initSetUp(){
+    
+    var now= new Date();
+    var dayNo=now.getDay();
+    var MonthNo = now.getMonth();
+    var dayName=GetDayNm(dayNo);
+    var MonthName = GetMonthNm(MonthNo);
+    var currTime = now.toLocaleTimeString();
+    var divName=document.querySelector(".intro");
+    
+    if(currTime>finalTime){    
+        //build the division
+        divName.innerHTML = "Good Morning" + "</br>";
+        divName.innerHTML += "Today is " + dayName + ", "; 
+        divName.innerHTML += MonthName + ", ";
+        divName.innerHTML += now.getDate() + ", ";
+        divName.innerHTML += now.getFullYear()+"</br>"; 
+        divName.innerHTML += "You have to Leave By " + "<span class='numberFont'>" +  finalTime + " AM</span> </br>";
+        divName.innerHTML += "You have "+ "<span class='numberFont'>" + worksNo + " </span> things to do before that";
+        divName.innerHTML += "" ;
+        /// to refresh with the new time every second
+        varSetIntervalId =  setInterval(function(){timerSetUp(currTime)}, 1000,);
+    } else{ //too late so change the screen
+        divName.innerHTML = "Sorry too late to start schedule";
+        document.querySelector(".timer").innerHTML ="";
+        document.getElementById("startBtn").style.display = "none";
+        document.querySelector(".timer").innerHTML = currTime;
+    }
+   
+}
+
+
+/******* show timer division with new time every second*************/
+function timerSetUp(startTime,timeInterval){
+    var divName=document.querySelector(".timer");
+    var now = new Date();
+    var currTime = now.toLocaleTimeString();
+    leftMinutes=timeLeft(startTime,timeInterval);
+    console.log(timeInterval);
+    divName.innerHTML = "It's " + "<span class='numberFont'>" + currTime+"</span> </br>";
+    divName.innerHTML += "So you have " + "<span class='numberFont'>" + leftMinutes + "</span>  mins </br>";
+}
+
+
+/**************count how much time left***********/
+//startTime,endTime
+function timeLeft(startTime,timeInterval){
+    var endTime,hrMin,min;
+    var now = new Date();
+    var currTime = now.toLocaleTimeString();
+    var currMin = now.getMinutes();
+    var arrStartTime = startTime.split(":");
+    var startMin = arrStartTime[1];
+    
+    console.log(currMin);
+    console.log(timeInterval);
+    
+    if (timeInterval) {
+        endTime = parseInt(startMin)+parseInt(timeInterval);
+        min = endTime;
+        console.log("with time inteavl endTime is " + endTime);
+    }else{
+        endTime =finalTime;
+        hrMin=endTime.split(":");
+        min=hrMin[1];
+        console.log(endTime);   
+    }
+    //function timeDiffrence(earlierTime,laterTime) to find time difference
+    var remainMin= min - currMin ;
+    return remainMin;
+}
+
+
+/*****************ScheduleNo**********************/
+function count(){
+    counter += 1;
+    if (counter!==0){
+        bonusTime = parseInt(bonusTime) + parseInt(leftMinutes);
+    }
+    schedule(counter);
+}
+
+/************show the schedule***************/
+
+
+function schedule(counter){
+       
+       /***********
+        console.log(counter);
+        console.log("it's the schedule");
+        console.log(varSetIntervalId);
+        ****************/
+        var timeEarned; 
+        var divName = document.querySelector(".schedule");
+        var now = new Date();
+        var currTime = now.toLocaleTimeString();
+        
+        if (counter< worksNo){
+            //set up before every schedule
+            clearInterval(varSetIntervalId);
+            document.querySelector(".intro").style.display = "none";
+            document.getElementById("startBtn").style.display = "none";
+            divName.style.display = "block";
+            document.getElementById("nextBtn").style.display = "block";
+            divName.innerHTML = "";
+
+            //build the schedule division
+            divName.innerHTML = worksToDo[counter][0]+ "</br>";
+            divName.innerHTML += "you have " + worksToDo[counter][1] + " to do it" +"</br>"; 
+            
+            //setup the timer division
+            varSetIntervalId =  setInterval(function(){timerSetUp(currTime,worksToDo[counter][1])}, 1000,);
+            
+        } else {
+            //build the schedule division when done
+            divName.innerHTML = "Yay!!! You made it. And you have earned " + bonusTime + " bonus minutes ";
+            clearInterval(varSetIntervalId);
+            document.querySelector(".timer").innerHTML = "";
+            document.querySelector(".timer").innerHTML = "Its " + currTime ;
+            document.getElementById("nextBtn").style.display = "none";
+        }
+        
+        
+    }
+    
+
+
+//library type function
+
+/*************
+function timeDiffrence(earlierTime,laterTime){
+    var difference = (laterTime.getTime() - earlierTime.getTime())/10000;
+    
+
+}
+
+***********************/
+
+/**************convert day no into Name of the day************/
+function  GetDayNm(dayNo){
+    var dayNm;
+    switch(dayNo){
+        case 0:
+            dayNm= "Sunday";
+            break;
+        case 1:
+            dayNm="Monday";
+            break;
+        case 2:
+            dayNm= "Tuesday";
+            break;
+        case 3:
+            dayNm="Wednesday";
+            break;    
+        case 4:
+            dayNm= "Thursday";
+            break;
+        case 5:
+            dayNm="Friday";
+            break;
+        case 6:
+            dayNm= "Saturday";
+            break;
+        }
+    return dayNm;
+}
+
+
+
+/*******convert Month No to name**************/
+function  GetMonthNm(MonthNo){
+    var MonthNm;
+    switch(MonthNo){
+        case 0:
+            MonthNm= "January";
+            break;
+        case 1:
+            MonthNm="February";
+            break;
+        case 2:
+            MonthNm= "March";
+            break;
+        case 3:
+            MonthNm="April";
+            break;    
+        case 4:
+            MonthNm= "May";
+            break;
+        case 5:
+            MonthNm="June";
+            break;
+        case 6:
+            MonthNm= "July";
+            break; 
+        case 7:
+            MonthNm= "August";
+            break;
+        case 8:
+            MonthNm="September";
+            break;
+        case 9:
+            MonthNm= "October";
+            break;
+        case 10:
+            MonthNm="November";
+            break;    
+        case 11:
+            MonthNm= "December";
+            break;
+        }
+    return MonthNm;
+}
+
+
+
+
+
